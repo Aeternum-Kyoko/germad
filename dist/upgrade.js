@@ -39,3 +39,28 @@ const oldChecklist=checklist;checklist=function(){return oldChecklist().replace(
 const oldNotes=notes;notes=function(){return oldNotes()+`<div class="panel mobile-backup" style="margin-top:18px"><h3>Back up this device</h3><p>Export your progress before switching browsers or devices. Import replaces the current workspace with your backup.</p><button id="export-mobile">Export backup</button><label class="import">Import backup<input id="import-mobile" type="file" accept="application/json"></label></div><div class="panel" style="margin-top:18px"><h3>Use this like an app</h3><p>Where your browser supports it, use its Install app / Add to Home Screen option. After one successful visit, core pages can work offline. Official external resources require an internet connection.</p><p class="muted">Progress is device-local. There is no account sync, automatic web monitoring, background reminder or secure document upload in this version.</p></div>`};document.addEventListener('click',e=>{if(e.target.closest('#export-mobile'))exportData()});document.addEventListener('change',e=>{if(e.target.id==='import-mobile'){const dt=new DataTransfer();if(e.target.files[0])dt.items.add(e.target.files[0]);$('#import').files=dt.files;$('#import').dispatchEvent(new Event('change'))}});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 render();
+
+// Phone navigation is separate from the sidebar, so desktop behaviour stays intact.
+const dockPrimary=[['overview','Home'],['universities','Explore'],['checklist','Tasks'],['budget','Budget']];
+const phoneQuery=matchMedia('(max-width: 700px)');
+const mobileDock=document.createElement('nav');
+mobileDock.id='mobile-dock';mobileDock.setAttribute('aria-label','Phone navigation');
+const mobileMore=document.createElement('dialog');
+mobileMore.id='mobile-more';mobileMore.setAttribute('aria-labelledby','mobile-more-title');
+document.body.append(mobileDock,mobileMore);
+const dockStyles=document.createElement('link');dockStyles.rel='stylesheet';dockStyles.href='dock.css';document.head.append(dockStyles);
+function dockIcon(key){return `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[key]}</svg>`}
+function updatePhoneNavigation(page){
+  const secondary=!dockPrimary.some(([id])=>id===page);
+  mobileDock.innerHTML=dockPrimary.map(([id,label])=>`<a href="#${id}" class="dock-item ${id===page?'selected':''}" ${id===page?'aria-current="page"':''}><span class="dock-symbol">${dockIcon(id)}</span><span>${label}</span></a>`).join('')+`<button type="button" id="dock-more" class="dock-item ${secondary?'selected':''}" aria-label="More sections" aria-haspopup="dialog" aria-controls="mobile-more" aria-expanded="${mobileMore.open}"><span class="dock-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></span><span>More</span></button>`;
+  mobileMore.innerHTML=`<div class="sheet-handle" aria-hidden="true"></div><div class="sheet-header"><div><h2 id="mobile-more-title">Your workspace</h2><p>Everything for your next chapter.</p></div><button type="button" id="dock-more-close" aria-label="Close more sections">×</button></div><div class="sheet-links">${Object.entries(views).filter(([id])=>!dockPrimary.some(([primary])=>primary===id)).map(([id,label])=>`<a href="#${id}" class="sheet-link ${page===id?'selected':''}" ${page===id?'aria-current="page"':''}><span class="sheet-icon">${dockIcon(id)}</span><span>${label}</span><span class="sheet-chevron" aria-hidden="true">›</span></a>`).join('')}</div>`;
+}
+const shellBeforeDock=decorateShell;
+decorateShell=function(page){shellBeforeDock(page);updatePhoneNavigation(page)};
+mobileDock.addEventListener('click',e=>{if(e.target.closest('#dock-more')){mobileMore.showModal();$('#dock-more').setAttribute('aria-expanded','true')}});
+function closePhoneMenu(){mobileMore.close();$('#dock-more')?.setAttribute('aria-expanded','false')}
+mobileMore.addEventListener('click',e=>{if(e.target===mobileMore||e.target.closest('#dock-more-close')||e.target.closest('a'))closePhoneMenu()});
+mobileMore.addEventListener('close',()=>$('#dock-more')?.setAttribute('aria-expanded','false'));
+window.addEventListener('hashchange',()=>{if(mobileMore.open)closePhoneMenu()});
+phoneQuery.addEventListener('change',e=>{if(!e.matches&&mobileMore.open)closePhoneMenu()});
+updatePhoneNavigation(location.hash.slice(1)||'overview');

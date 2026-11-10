@@ -1,0 +1,35 @@
+/* Mobile-only glass dock; tablet and desktop keep the existing sidebar. */
+#mobile-dock,#mobile-more{display:none}
+@media(max-width:700px){
+  body>aside{display:none}
+  main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+  main>header{position:sticky;top:0;height:65px;background:color-mix(in srgb,var(--paper) 87%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+  #page-label{font-size:16px;font-weight:650;letter-spacing:-.4px}
+  #mobile-dock{position:fixed;z-index:20;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:calc(100% - 28px);max-width:440px;margin:0;padding:7px 6px;background:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.9);border-radius:26px;box-shadow:0 8px 35px #162b4b1a,0 0 0 .5px #0000000a;backdrop-filter:blur(25px) saturate(170%);-webkit-backdrop-filter:blur(25px) saturate(170%)}
+  #mobile-dock .dock-item{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;min-width:0;min-height:55px;padding:5px 0;margin:0;border:0;border-radius:19px;background:transparent;box-shadow:none;text-decoration:none;color:#777781;font:500 10px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:-.1px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  #mobile-dock .dock-symbol{display:grid;place-items:center;height:24px;width:30px}
+  #mobile-dock svg{height:22px;width:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  #mobile-dock #dock-more svg{fill:currentColor;stroke:none}
+  #mobile-dock .dock-item.selected{background:#0071e310;color:var(--blue)}
+  #mobile-dock .dock-item:active{background:#0071e31c;transform:scale(.96)}
+  #mobile-dock .dock-item:focus-visible{outline:3px solid #79b8ff;outline-offset:0}
+  body.dark #mobile-dock{background:rgba(37,37,41,.88);border-color:#ffffff1c;box-shadow:0 8px 35px #0006}
+  body.dark #mobile-dock .dock-item{color:#a9a9b2}
+  body.dark #mobile-dock .dock-item.selected{color:#78b6ff;background:#0071e32a}
+  #mobile-more[open]{display:block;position:fixed;top:auto;bottom:0;left:0;right:0;width:100%;max-width:100%;max-height:85dvh;margin:0;border-radius:26px 26px 0 0;border:1px solid var(--line);border-bottom:0;padding:9px 20px calc(22px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;box-shadow:0 -10px 70px #0002}
+  #mobile-more::backdrop{background:#11182750;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+  .sheet-handle{height:4px;width:34px;border-radius:5px;background:var(--line);margin:0 auto 20px}
+  .sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .sheet-header h2{font-size:23px;letter-spacing:-.7px;margin:0}
+  .sheet-header p{font-size:12px;color:var(--muted);margin:3px 0 0}
+  #dock-more-close{width:31px;height:31px;display:grid;place-items:center;border:0;border-radius:50%;font-size:24px;background:var(--paper);color:var(--muted);padding:0}
+  .sheet-links{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .sheet-link{display:flex;gap:9px;align-items:center;min-height:59px;padding:12px 10px;border:1px solid var(--line);border-radius:13px;color:var(--ink);font-size:11px;font-weight:500;text-decoration:none;background:var(--paper)}
+  .sheet-link:hover{text-decoration:none}.sheet-link.selected{border-color:#0071e340;background:#0071e30d;color:var(--blue)}
+  .sheet-icon{display:grid;place-items:center;flex:0 0 23px;color:var(--blue)}
+  .sheet-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .sheet-chevron{margin-left:auto;color:var(--muted);font-size:19px}
+  #toast{bottom:calc(100px + env(safe-area-inset-bottom,0px));left:20px;right:20px;text-align:center}
+  dialog:not(#mobile-more){max-height:75dvh;overflow:auto}
+}
+@media(max-width:360px){.sheet-links{grid-template-columns:1fr}.sheet-link{min-height:48px}#mobile-dock{width:calc(100% - 20px)}}
