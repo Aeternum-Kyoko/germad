@@ -1,0 +1,4 @@
+import {createServer} from 'node:http';
+import {pathToFileURL} from 'node:url';
+const worker=(await import(pathToFileURL(process.cwd()+'/dist/server/index.js').href)).default;
+createServer(async(req,res)=>{try{const buffers=[];for await(const c of req)buffers.push(c);const headers=new Headers(req.headers);headers.set('oai-authenticated-user-id','local-preview');const request=new Request('http://127.0.0.1:8765'+req.url,{method:req.method,headers,...(!['GET','HEAD'].includes(req.method)?{body:Buffer.concat(buffers)}:{})});const result=await worker.fetch(request);res.writeHead(result.status,Object.fromEntries(result.headers));res.end(Buffer.from(await result.arrayBuffer()))}catch(e){res.writeHead(500);res.end(e.message)}}).listen(8765,'127.0.0.1',()=>console.log('Local: http://127.0.0.1:8765'));
