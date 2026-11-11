@@ -1,1 +1,2 @@
-{"name":"germany-study-path","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","test":"node --test scripts/worker.test.mjs","dev":"node scripts/dev.mjs"}}
+{"name":"germany-study-path","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","test":"node --test scripts/*.test.mjs","dev":"node scripts/dev.mjs"}}
+
